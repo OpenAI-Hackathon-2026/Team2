@@ -8,3 +8,13 @@ Run `python3 tests/validate_demo.py` from Team2. The JSON files are fictional fi
 4. **Close:** Confirm deferral/no-nudge behavior. Test actual Codex CLI app-server acquisition on Kyle's Mac and confirm dot can invoke the helper through an authorized executor.
 
 Fixtures contain no real personal data. Never add personal messages, credentials, or real quota snapshots to the repository.
+
+
+## Trigger behavior examples
+
+- **Direct:** “What are my Codex limits and reset times?” Refresh through the authorized local reader and show distinct values.
+- **Scheduled planning:** An already authorized host schedule invokes the skill to choose a small project task around current capacity. The skill itself creates no schedule.
+- **Ambient project chat:** While discussing the replacement-parts reference, recent quota can gently influence a smaller reviewable step. Omit numbers unless asked or materially relevant; do not start a read for every casual reply.
+- **Unrelated topic:** Answer normally without quota or project nudges.
+- **Deferral:** If the user deferred a suggestion in accessible history, do not repeat or rephrase it.
+- **Unknown quota:** Ambiently omit quota claims and continue naturally; for a direct quota request, disclose that a trustworthy read is unavailable and ask how to obtain one or wait.

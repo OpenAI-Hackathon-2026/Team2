@@ -26,6 +26,9 @@ def main():
     fresh_time = datetime.fromisoformat(mixed["quota_snapshots"][0]["generated_at"].replace("Z", "+00:00"))
     stale_time = datetime.fromisoformat(mixed["quota_snapshots"][1]["generated_at"].replace("Z", "+00:00"))
     assert (fresh_time - stale_time).total_seconds() > 3600
+    skill = (ROOT / ".agents/skills/project-nudge/SKILL.md").read_text()
+    for phrase in ("Direct quota or project-priority request", "Explicit project planning", "Ambient use", "Unrelated conversation", "do not repeatedly prompt", "accessible conversation history", "does not schedule itself", "read_codexbar_usage.py", "CodexBar supplements Codex CLI", "does not invalidate fresh Codex CLI quota"):
+        assert phrase in skill, f"missing trigger behavior guidance: {phrase}"
     forbidden = {"password", "access_token", "refresh_token", "api_key", "secret"}
     def keys(obj):
         if isinstance(obj, dict):
