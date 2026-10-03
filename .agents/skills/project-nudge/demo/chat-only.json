@@ -1,0 +1,7 @@
+{
+  "case": "chat-only-no-quota-source",
+  "goal": "Reduce confusion when customers ask which replacement belt fits the Model K press.",
+  "chat_context": ["Kyle says the team gets this question often.", "The belt part number is not confirmed in chat."],
+  "capabilities": {"email": false, "github": false, "computer_activity": false, "codexbar_source": false},
+  "expected": {"disclose_quota_aware_selection_unavailable": true, "ask_for_authorized_fresh_quota_or_wait": true, "do_not_substitute_generic_nudge": true, "invent_part_number": false}
+}

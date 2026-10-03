@@ -1,0 +1,11 @@
+{
+  "case": "project-context-no-quota-source",
+  "goal": "Make the replacement-belt answer easier for the team to find.",
+  "chat_context": ["The goal is to reduce repeated customer questions."],
+  "capabilities": {
+    "email": {"available": true, "exposed_summary": "A colleague offered to review a draft fitment note."},
+    "github": {"available": true, "exposed_summary": "Issue #12 asks for a searchable replacement-parts reference."},
+    "codexbar_source": false
+  },
+  "expected": {"optional_context_does_not_replace_quota": true, "disclose_quota_aware_selection_unavailable": true, "use_only_exposed_summaries": true}
+}

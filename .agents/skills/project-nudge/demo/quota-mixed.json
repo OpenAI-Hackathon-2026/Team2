@@ -1,0 +1,14 @@
+{
+  "case": "multi-provider-quota",
+  "goal": "Draft a short replacement-belt reference for colleague review.",
+  "candidate_projects": [
+    {"name": "Replacement-belt reference", "bounded_task": "Draft a one-paragraph fitment note for colleague review", "project_evidence": "A colleague offered to verify fitment details; issue #12 requests a searchable reference."},
+    {"name": "Customer FAQ refresh", "bounded_task": "Review and edit one FAQ answer", "project_evidence": "Chat reports customers often ask about belt fitment."}
+  ],
+  "capabilities": {"codexbar_source": {"accessible": true, "authorized": true}},
+  "quota_snapshots": [
+    {"provider": "Provider A", "account": "demo-a", "generated_at": "2026-10-03T17:50:00Z", "windows": [{"name": "session", "remaining_percent": 42, "resets_at": "2026-10-03T18:30:00Z"}], "credits": {"balance": 7, "unit": "demo credits"}, "banked_reset_expires_at": "2026-10-04T12:00:00Z"},
+    {"provider": "Provider B", "account": "demo-b", "generated_at": "2026-10-03T16:00:00Z", "windows": [{"name": "weekly", "remaining_percent": null, "resets_at": null}], "credits": null, "banked_reset_expires_at": null}
+  ],
+  "expected": {"keep_providers_separate": true, "provider_a_fresh": true, "provider_b_quota_unknown_stale": true, "map_quota_to_real_candidate_work": true, "no_cross_provider_total_or_cost_prediction": true}
+}
