@@ -1,6 +1,5 @@
 """Synthetic compatibility tests for CodexBar usage JSON; no account or network access."""
 import json
-import os
 import subprocess
 import sys
 import tempfile
@@ -20,6 +19,7 @@ def main():
     spec = importlib.util.spec_from_file_location("codexbar_reader", READER)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
+    assert module.DEFAULT_TIMEOUT_SECONDS == 60
     normalized = module.normalize(payload, NOW)
     providers = normalized["providers"]
     assert [p["provider"] for p in providers] == ["claude", "gemini", "cursor"]
@@ -43,17 +43,41 @@ def main():
     naive = module.normalize([{"provider": "claude", "usage": {"updatedAt": "2030-01-02T09:00:00"}}], NOW)
     assert naive["providers"][0]["fresh"] is False
 
-    fake_payload = json.dumps(payload)
-    fake = "#!/usr/bin/env python3\nimport sys\nprint(" + repr(fake_payload) + ")\n"
     with tempfile.TemporaryDirectory() as td:
         fake_bin = Path(td) / "codexbar"
-        fake_bin.write_text(fake)
+
+        def run_fake(stdout, exit_code):
+            runner = Path(td) / "runner.py"
+            runner.write_text(
+                "#!/usr/bin/env python3\nimport sys\nsys.stdout.write(" + repr(stdout) + ")\nsys.exit(" + str(exit_code) + ")\n"
+            )
+            runner.chmod(0o700)
+            return subprocess.run(
+                [sys.executable, str(READER), "--codexbar-bin", str(runner)],
+                capture_output=True, text=True, timeout=5,
+            )
+
+        # Simulate a valid partial provider payload with an OAuth fetch failure (nonzero process exit).
+        partial = json.dumps(payload)
+        fake_bin.write_text(
+            "#!/usr/bin/env python3\nimport sys\nsys.stdout.write(" + repr(partial) + ")\nsys.exit(1)\n"
+        )
         fake_bin.chmod(0o700)
         proc = subprocess.run([sys.executable, str(READER), "--codexbar-bin", str(fake_bin)], capture_output=True, text=True, timeout=5)
         assert proc.returncode == 0, proc.stderr
         cli_data = json.loads(proc.stdout)
         assert len(cli_data["providers"]) == 3
         assert "codex" not in [p["provider"] for p in cli_data["providers"]]
+        assert cli_data["providers"][1]["error"]["message"] == "Synthetic provider fetch failure"
+        assert "exited with status 1" in cli_data["warning"]
+
+        malformed = run_fake("not JSON", 1)
+        assert malformed.returncode == 2
+        assert "exited with status 1" in malformed.stderr and "valid JSON" in malformed.stderr
+        no_providers = run_fake(json.dumps([{"provider": "codex", "usage": {}}]), 1)
+        assert no_providers.returncode == 2
+        assert "no usable non-Codex" in no_providers.stderr
+
         absent = subprocess.run([sys.executable, str(READER), "--codexbar-bin", str(Path(td) / "missing")], capture_output=True, text=True, timeout=5)
         assert absent.returncode == 2
         assert "optional CodexBar data unavailable" in absent.stderr

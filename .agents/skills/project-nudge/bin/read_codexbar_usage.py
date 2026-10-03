@@ -13,6 +13,7 @@ import sys
 from datetime import datetime, timezone
 
 MAX_AGE_SECONDS = 3600
+DEFAULT_TIMEOUT_SECONDS = 60
 
 
 class CodexBarReadError(Exception):
@@ -110,24 +111,36 @@ def normalize(payload, now=None):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--codexbar-bin", help="CodexBar executable (useful for controlled tests)")
+    parser.add_argument(
+        "--timeout", type=float, default=DEFAULT_TIMEOUT_SECONDS,
+        help=f"maximum seconds to wait for CodexBar (default: {DEFAULT_TIMEOUT_SECONDS})",
+    )
     args = parser.parse_args()
+    if args.timeout <= 0:
+        raise CodexBarReadError("CodexBar timeout must be greater than zero")
     executable = args.codexbar_bin or os.environ.get("CODEXBAR_BIN") or shutil.which("codexbar")
     if not executable:
         raise CodexBarReadError("CodexBar is not installed or not on PATH; optional provider data is unavailable")
     try:
         result = subprocess.run(
             [executable, "usage", "--format", "json", "--provider", "all"],
-            capture_output=True, text=True, timeout=30, check=False,
+            capture_output=True, text=True, timeout=args.timeout, check=False,
         )
     except (OSError, subprocess.TimeoutExpired) as exc:
         raise CodexBarReadError(f"Could not read CodexBar usage: {exc}") from exc
-    if result.returncode:
-        raise CodexBarReadError(f"CodexBar exited with status {result.returncode}")
     try:
         payload = json.loads(result.stdout)
     except json.JSONDecodeError as exc:
-        raise CodexBarReadError("CodexBar did not return valid JSON on stdout") from exc
-    json.dump(normalize(payload), sys.stdout, indent=2)
+        detail = f"CodexBar exited with status {result.returncode}; " if result.returncode else ""
+        raise CodexBarReadError(detail + "CodexBar did not return valid JSON on stdout") from exc
+    normalized = normalize(payload)
+    if result.returncode and not normalized["providers"]:
+        raise CodexBarReadError(
+            f"CodexBar exited with status {result.returncode} and returned no usable non-Codex provider records"
+        )
+    if result.returncode:
+        normalized["warning"] = f"CodexBar exited with status {result.returncode}; partial provider results are shown"
+    json.dump(normalized, sys.stdout, indent=2)
     sys.stdout.write("\n")
 
 
