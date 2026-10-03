@@ -1,0 +1,39 @@
+[
+  {
+    "provider": "codex",
+    "account": "synthetic Codex account",
+    "source": "cli",
+    "usage": {
+      "primary": {"usedPercent": 22, "windowMinutes": 300, "resetsAt": "2030-01-02T10:00:00Z"},
+      "updatedAt": "2030-01-02T09:00:00Z"
+    }
+  },
+  {
+    "provider": "claude",
+    "account": "Synthetic Claude profile A",
+    "source": "claude.ai",
+    "usage": {
+      "primary": {"usedPercent": 41, "windowMinutes": 300, "resetsAt": "2030-01-02T10:00:00Z"},
+      "secondary": {"usedPercent": 15, "windowMinutes": 10080, "resetsAt": "2030-01-07T09:00:00Z"},
+      "updatedAt": "2030-01-02T09:00:00Z"
+    },
+    "credits": {"remaining": 12, "updatedAt": "2030-01-02T09:00:00Z", "balanceReadSucceeded": true}
+  },
+  {
+    "provider": "gemini",
+    "account": "Synthetic Google profile",
+    "source": "google",
+    "usage": {"updatedAt": "2030-01-02T07:00:00Z"},
+    "error": {"code": 7, "message": "Synthetic provider fetch failure", "kind": "provider"}
+  },
+  {
+    "provider": "cursor",
+    "account": "Synthetic Cursor profile",
+    "source": "cursor",
+    "usage": {
+      "extraRateWindows": [{"id": "fast", "title": "Fast requests", "window": {"usedPercent": 30, "resetsAt": "2030-01-02T10:00:00Z"}}],
+      "subscriptionExpiresAt": "2030-01-31T00:00:00Z",
+      "updatedAt": "2030-01-02T09:00:00Z"
+    }
+  }
+]
